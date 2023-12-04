@@ -1,6 +1,6 @@
-const createRazorpayOrder = async (req, res) => {
-  const razorpay = require("razorpay"); // Include Razorpay module
+const razorpay = require("razorpay"); // Include Razorpay module
 
+const createRazorpayOrder = async (req, res) => {
   // Set up your Razorpay instance with your API key and secret
   const rzp = new razorpay({
     key_id: "rzp_test_xtO2RWiNqyRHfJ",
@@ -18,7 +18,20 @@ const createRazorpayOrder = async (req, res) => {
   try {
     // Create Razorpay order
     const response = await rzp.orders.create(options);
-
+    console.log("response", response);
+    // Send the order response to the client
+    res.json(response);
+  } catch (error) {
+    // Handle errors
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const saveOrder = async (req, res) => {
+  try {
+    // Create Razorpay order
+    const response = await rzp.orders.create(options);
+    console.log("response", response);
     // Send the order response to the client
     res.json(response);
   } catch (error) {

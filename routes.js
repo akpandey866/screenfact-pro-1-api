@@ -49,12 +49,19 @@ router.post("/saveCandidateSearch", upload.single("file"), (req, res, next) => {
   // Proceed with saving data (file or no file)
   employeeController.createEmployee(req, res, next);
 });
-router.get("/employeesAll", employeeController.getAllEmployees);
+
 router.get(
   "/employeesSingle",
   upload.single("file"),
   employeeController.getSingleEmployees
 );
+
+router.post(
+  "/employees",
+  upload.single("file"),
+  employeeController.createEmployee
+);
+router.get("/employeesAll", employeeController.getAllEmployees);
 // router.get('/employees/:id', employeeController.getEmployeeById);
 // router.put('/employees/:id', employeeController.updateEmployeeById);
 // router.delete('/employees/:id', employeeController.deleteEmployeeById);

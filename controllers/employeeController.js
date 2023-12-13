@@ -34,6 +34,7 @@ exports.createEmployee = async (req, res) => {
 };
 
 exports.getAllEmployees = async (req, res) => {
+  console.log("all employee");
   try {
     //const userId = req.authData.userId;
     const employees = await Employee.find();

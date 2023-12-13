@@ -40,10 +40,16 @@ exports.getAllEmployees = async (req, res) => {
   console.log("all employee");
   try {
     //const userId = req.authData.userId;
-    const employees = await Employee.find();
+    const searchedEmployee = await Employee.find({ status: 1 })
+      .sort({ createdAt: -1 })
+      .limit(5);
+    const appealedEmployee = await Employee.find({ status: 2 })
+      .sort({ createdAt: -1 })
+      .limit(5);
     res.status(201).json({
       success: true,
-      data: employees,
+      searchedEmployee: searchedEmployee,
+      appealedEmployee: appealedEmployee,
     });
   } catch (error) {
     console.error(error);

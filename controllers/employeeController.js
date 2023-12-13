@@ -1,6 +1,8 @@
 // controllers.js
 const Employee = require("../models/Employee");
+const Candidate = require("../models/Candidate");
 const path = require("path");
+const moment = require("moment");
 
 const submittedRecords = [];
 
@@ -23,6 +25,7 @@ exports.createEmployee = async (req, res) => {
     newEmp.dateOfLeave = req.body.dateOfLeave;
     newEmp.designation = req.body.designation;
     newEmp.salary = req.body.salary;
+    newEmp.status = req.body.status;
     newEmp.letterOfAuthority = req.file ? req.file.filename : "";
 
     const savedEmp = await newEmp.save();
@@ -52,10 +55,22 @@ exports.getAllEmployees = async (req, res) => {
 };
 
 exports.getSingleEmployees = async (req, res) => {
-  console.log("req data", req.body);
+  console.log(
+    "get req data",
+    moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
+    moment(req.body.dateOfLeave).format("MMMM DD, YYYY"),
+    req.body.designation
+  );
   try {
     //const userId = req.authData.userId;
-    const findEmployee = await Employee.find({ employeeId: req.body.emp_id });
+    const findEmployee = await Candidate.findOne({
+      name_of_employee: req.body.name,
+      employee_code: req.body.employeeId,
+      doj: moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
+      dol: moment(req.body.dateOfLeave).format("MMMM DD, YYYY"),
+      designation: req.body.designation,
+      //salary: req.body.salary,
+    });
     res.json(findEmployee);
   } catch (error) {
     console.error(error);

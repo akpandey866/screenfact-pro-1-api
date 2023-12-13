@@ -1,35 +1,38 @@
 // models/Employee.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const EmployeeSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   employeeId: {
     type: String,
     required: true,
-    unique: true
+    //unique: true
   },
   dateOfJoin: {
-    type: Date,
+    type: String,
     required: true,
-    default: Date.now
+    default: Date.now,
   },
   dateOfLeave: {
-    type: Date
+    type: String,
   },
   designation: {
-    type: String
+    type: String,
   },
   salary: {
-    type: Number
+    type: Number,
   },
   letterOfAuthority: {
     type: String, // Assuming the file path is stored as a string
   },
+  status: {
+    type: Number, // Assuming the file path is stored as a string
+  },
 });
 
-const Employee = mongoose.model('Employee', EmployeeSchema);
+const Employee = mongoose.model("Employee", EmployeeSchema);
 
 module.exports = Employee;

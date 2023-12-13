@@ -63,6 +63,7 @@ router.post(
   employeeController.createEmployee
 );
 router.get("/employeesAll", employeeController.getAllEmployees);
+router.post("/getSearchedEmp", employeeController.getSingleEmployees);
 // router.get('/employees/:id', employeeController.getEmployeeById);
 // router.put('/employees/:id', employeeController.updateEmployeeById);
 // router.delete('/employees/:id', employeeController.deleteEmployeeById);

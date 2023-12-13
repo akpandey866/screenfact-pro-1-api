@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 require("./configs/db.js");
 app.use(bodyParser.json());
-const port = 3001;
+const port = 4000;
 
 app.use(cors());
 

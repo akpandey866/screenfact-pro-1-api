@@ -7,8 +7,9 @@ const path = require("path");
 // Import your controllers here
 const itemsController = require("./controllers/itemsController");
 const authController = require("./controllers/authController");
-const employeeController = require("./controllers/EmployeeController");
+const employeeController = require("./controllers/employeeController");
 const createRazorpayOrder = require("./controllers/createRazorpayOrder");
+const CandidateController = require("./controllers/CandidateController");
 
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -61,6 +62,12 @@ router.get(
 
 // Logout (not implemented in the server, since JWT tokens are stateless)
 router.get("/logout", authController.logout);
+
+// candidate save records
+router.post(
+  "/importCandidateRecord",
+  CandidateController.importCandidateRecord
+);
 
 // Protected route example
 router.get("/protected", authController.verifyToken, (req, res) => {

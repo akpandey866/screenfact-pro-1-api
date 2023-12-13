@@ -37,10 +37,16 @@ exports.getAllEmployees = async (req, res) => {
   try {
     //const userId = req.authData.userId;
     const employees = await Employee.find();
-    res.json(employees);
+    res.status(201).json({
+      success: true,
+      data: employees,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({
+      success: false,
+      message: "error",
+    });
   }
 };
 

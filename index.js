@@ -6,10 +6,11 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 require("./configs/db.js");
-app.use(bodyParser.json());
-const port = 4000;
-
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+const port = 4000;
 
 app.use("/api", routes);
 //app.use(cors());

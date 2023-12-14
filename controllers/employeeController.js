@@ -2,6 +2,7 @@
 const Employee = require("../models/Employee");
 const Candidate = require("../models/Candidate");
 const path = require("path");
+// const moment = require("moment");
 const moment = require("moment");
 
 const submittedRecords = [];
@@ -12,8 +13,8 @@ exports.showForm = (req, res) => {
 
 exports.createEmployee = async (req, res) => {
   try {
-    console.log("req=>", req.body);
-    console.log("req=>", req.file);
+    console.log("create new employee req=>", req.body);
+    console.log("create new employee file=>", req.file);
     const { name, employeeId, dateOfJoin, dateOfLeave, designation, salary } =
       req.body;
     const letterOfAuthority = req.file;
@@ -61,6 +62,7 @@ exports.getAllEmployees = async (req, res) => {
 };
 
 exports.getSingleEmployees = async (req, res) => {
+  console.log("req", req.body);
   console.log(
     "get req data",
     moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
@@ -72,8 +74,34 @@ exports.getSingleEmployees = async (req, res) => {
     const findEmployee = await Candidate.findOne({
       name_of_employee: req.body.name,
       employee_code: req.body.employeeId,
-      doj: moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
-      dol: moment(req.body.dateOfLeave).format("MMMM DD, YYYY"),
+      doj: req.body.dateOfJoin,
+      dol: req.body.dateOfLeave,
+      designation: req.body.designation,
+      //salary: req.body.salary,
+    });
+    res.json(findEmployee);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getSearchedEmp = async (req, res) => {
+  console.log("req", req.body);
+
+  console.log(
+    "get req data",
+    moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
+    moment(req.body.dateOfLeave).format("MMMM DD, YYYY"),
+    req.body.designation
+  );
+  try {
+    //const userId = req.authData.userId;
+    const findEmployee = await Candidate.findOne({
+      name_of_employee: req.body.name,
+      employee_code: req.body.employeeId,
+      doj: req.body.dateOfJoin,
+      dol: req.body.dateOfLeave,
       designation: req.body.designation,
       //salary: req.body.salary,
     });

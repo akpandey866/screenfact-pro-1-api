@@ -46,7 +46,6 @@ router.post("/saveCandidateSearch", upload.single("file"), (req, res, next) => {
     // If a file was uploaded, attach its information to the request body
     req.body.file = req.file;
   }
-
   // Proceed with saving data (file or no file)
   employeeController.createEmployee(req, res, next);
 });
@@ -63,7 +62,13 @@ router.post(
   employeeController.createEmployee
 );
 router.get("/employeesAll", employeeController.getAllEmployees);
-router.post("/getSearchedEmp", employeeController.getSingleEmployees);
+//router.post("/getSearchedEmp", employeeController.getSearchedEmp);
+// router.post("/getSearchedEmp", (req, res, next) => {
+//   employeeController.getSearchedEmp(req, res, next);
+// });
+router.post("/getSearchedEmp", upload.none(), (req, res, next) => {
+  employeeController.getSearchedEmp(req, res, next);
+});
 // router.get('/employees/:id', employeeController.getEmployeeById);
 // router.put('/employees/:id', employeeController.updateEmployeeById);
 // router.delete('/employees/:id', employeeController.deleteEmployeeById);

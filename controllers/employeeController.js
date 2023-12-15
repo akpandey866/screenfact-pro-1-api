@@ -13,8 +13,6 @@ exports.showForm = (req, res) => {
 
 exports.createEmployee = async (req, res) => {
   try {
-    console.log("create new employee req=>", req.body);
-    console.log("create new employee file=>", req.file);
     const { name, employeeId, dateOfJoin, dateOfLeave, designation, salary } =
       req.body;
     const letterOfAuthority = req.file;
@@ -38,7 +36,6 @@ exports.createEmployee = async (req, res) => {
 };
 
 exports.getAllEmployees = async (req, res) => {
-  console.log("all employee");
   try {
     //const userId = req.authData.userId;
     const searchedEmployee = await Employee.find({ status: 1 })
@@ -51,6 +48,44 @@ exports.getAllEmployees = async (req, res) => {
       success: true,
       searchedEmployee: searchedEmployee,
       appealedEmployee: appealedEmployee,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "error",
+    });
+  }
+};
+
+exports.getAllSearch = async (req, res) => {
+  try {
+    //const userId = req.authData.userId;
+    const searchedList = await Employee.find({ status: 1 }).sort({
+      createdAt: -1,
+    });
+    res.status(201).json({
+      success: true,
+      searchedList: searchedList,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "error",
+    });
+  }
+};
+
+exports.getAllAppeal = async (req, res) => {
+  try {
+    //const userId = req.authData.userId;
+    const appealList = await Employee.find({ status: 1 }).sort({
+      createdAt: -1,
+    });
+    res.status(201).json({
+      success: true,
+      appealList: appealList,
     });
   } catch (error) {
     console.error(error);

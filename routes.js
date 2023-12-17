@@ -1,13 +1,14 @@
 // routes.js
-
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const { verifyToken, handleFile } = require("./middlewares/authMiddleware"); // Adjust the path accordingly
 
 // Import your controllers here
 const itemsController = require("./controllers/itemsController");
 const authController = require("./controllers/authController");
 const employeeController = require("./controllers/employeeController");
+const WalletController = require("./controllers/WalletController");
 const createRazorpayOrder = require("./controllers/createRazorpayOrder");
 const CandidateController = require("./controllers/CandidateController");
 
@@ -40,15 +41,24 @@ router.put("/items/:id", itemsController.update);
 router.delete("/items/:id", itemsController.delete);
 
 router.get("/", employeeController.showForm);
-router.post("/saveCandidateSearch", upload.single("file"), (req, res, next) => {
-  // Check if a file was uploaded
-  if (req.file) {
-    // If a file was uploaded, attach its information to the request body
-    req.body.file = req.file;
+router.post(
+  "/saveCandidateSearch",
+  verifyToken,
+  upload.single("file"),
+  (req, res, next) => {
+    // Proceed with saving data (file or no file)
+    employeeController.createEmployee(req, res, next);
   }
-  // Proceed with saving data (file or no file)
-  employeeController.createEmployee(req, res, next);
-});
+);
+// router.post("/saveCandidateSearch", upload.single("file"), (req, res, next) => {
+//   // Check if a file was uploaded
+//   if (req.file) {
+//     // If a file was uploaded, attach its information to the request body
+//     req.body.file = req.file;
+//   }
+//   // Proceed with saving data (file or no file)
+//   employeeController.createEmployee(req, res, next);
+// });
 
 router.get(
   "/employeesSingle",
@@ -84,6 +94,9 @@ router.post(
   CandidateController.importCandidateRecord
 );
 
+// Wallet routes
+router.get("/wallet/listing", verifyToken, WalletController.listing);
+router.post("/wallet/addMoney", verifyToken, WalletController.addMoney);
 // Protected route example
 router.get("/protected", authController.verifyToken, (req, res) => {
   res.json({
@@ -91,5 +104,8 @@ router.get("/protected", authController.verifyToken, (req, res) => {
     authData: req.authData,
   });
 });
+
+// router.all("/wallet/edit/:id", WalletController.edit);
+// router.get("/faqs/status/:id/:status", WalletController.status);
 
 module.exports = router;

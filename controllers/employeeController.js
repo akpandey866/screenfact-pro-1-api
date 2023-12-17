@@ -15,7 +15,6 @@ exports.createEmployee = async (req, res) => {
   try {
     const { name, employeeId, dateOfJoin, dateOfLeave, designation, salary } =
       req.body;
-    const letterOfAuthority = req.file;
     // Assuming you have middleware to extract user information from the JWT token
     var newEmp = new Employee();
     newEmp.name = req.body.name;
@@ -97,13 +96,6 @@ exports.getAllAppeal = async (req, res) => {
 };
 
 exports.getSingleEmployees = async (req, res) => {
-  console.log("req", req.body);
-  console.log(
-    "get req data",
-    moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
-    moment(req.body.dateOfLeave).format("MMMM DD, YYYY"),
-    req.body.designation
-  );
   try {
     //const userId = req.authData.userId;
     const findEmployee = await Candidate.findOne({
@@ -122,14 +114,6 @@ exports.getSingleEmployees = async (req, res) => {
 };
 
 exports.getSearchedEmp = async (req, res) => {
-  console.log("req", req.body);
-
-  console.log(
-    "get req data",
-    moment(req.body.dateOfJoin).format("MMMM DD, YYYY"),
-    moment(req.body.dateOfLeave).format("MMMM DD, YYYY"),
-    req.body.designation
-  );
   try {
     //const userId = req.authData.userId;
     const findEmployee = await Candidate.findOne({
@@ -140,7 +124,10 @@ exports.getSearchedEmp = async (req, res) => {
       designation: req.body.designation,
       //salary: req.body.salary,
     });
-    res.json(findEmployee);
+    res.status(201).json({
+      success: true,
+      data: findEmployee,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

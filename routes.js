@@ -96,6 +96,7 @@ router.get("/logout", authController.logout);
 // candidate save records
 router.post(
   "/importCandidateRecord",
+  verifyToken,
   CandidateController.importCandidateRecord
 );
 

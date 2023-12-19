@@ -50,6 +50,7 @@ const validateFields = (candidate) => {
 exports.importCandidateRecord = async (req, res) => {
   try {
     const candidateDataArray = req.body.candidateData;
+    const company_name = req.authData.company_name;
 
     // Sanitize field names for each candidate object in the array
     const sanitizedCandidateData = candidateDataArray.map((candidate) => {
@@ -58,6 +59,7 @@ exports.importCandidateRecord = async (req, res) => {
         const sanitizedKey = sanitizeField(key);
         sanitizedCandidate[sanitizedKey] = value;
       }
+      sanitizedCandidate.company_name = company_name;
       return sanitizedCandidate;
     });
 
@@ -79,6 +81,7 @@ exports.importCandidateRecord = async (req, res) => {
     }
 
     // Assuming you have middleware to extract user information from the JWT token
+
     const newCandidates = await Candidate.insertMany(sanitizedCandidateData);
 
     if (newCandidates.length > 0) {

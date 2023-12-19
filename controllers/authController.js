@@ -79,6 +79,7 @@ exports.login = async (req, res) => {
         username: user.username,
         record_fee: user.record_fee,
         user_role_id: user.user_role_id,
+        company_name: user.company_name,
       },
       config.jwtSecret,
       { expiresIn: "1h" }

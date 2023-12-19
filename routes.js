@@ -33,7 +33,10 @@ router.post("/login", upload.none(), authController.login);
 // Protected routes (require authentication middleware)
 router.use("/items", authController.verifyToken);
 
-router.post("/create-order", createRazorpayOrder);
+// router.post("/create-order", createRazorpayOrder);
+router.post("/create-order", upload.none(), (req, res, next) => {
+  createRazorpayOrder(req, res, next);
+});
 // CRUD operations for items
 router.post("/items", itemsController.create);
 router.get("/items", itemsController.read);
@@ -41,6 +44,7 @@ router.put("/items/:id", itemsController.update);
 router.delete("/items/:id", itemsController.delete);
 
 router.get("/", employeeController.showForm);
+router.get("/getCompanyList", employeeController.getCompanyList);
 router.post(
   "/saveCandidateSearch",
   verifyToken,
@@ -81,6 +85,7 @@ router.post("/getSearchedEmp", upload.none(), (req, res, next) => {
 });
 router.get("/getAllSearch", employeeController.getAllSearch);
 router.get("/getAllAppeal", employeeController.getAllAppeal);
+
 // router.get('/employees/:id', employeeController.getEmployeeById);
 // router.put('/employees/:id', employeeController.updateEmployeeById);
 // router.delete('/employees/:id', employeeController.deleteEmployeeById);
@@ -97,6 +102,7 @@ router.post(
 // Wallet routes
 router.get("/wallet/listing", verifyToken, WalletController.listing);
 router.post("/wallet/addMoney", verifyToken, WalletController.addMoney);
+router.post("/wallet/deductAmount", verifyToken, WalletController.deductAmount);
 // Protected route example
 router.get("/protected", authController.verifyToken, (req, res) => {
   res.json({

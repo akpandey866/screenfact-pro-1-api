@@ -32,6 +32,12 @@ const EmployeeSchema = new mongoose.Schema(
     status: {
       type: Number, // Assuming the file path is stored as a string
     },
+    reason_for_leaving: {
+      type: String,
+    },
+    exit_formality: {
+      type: Number,
+    },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

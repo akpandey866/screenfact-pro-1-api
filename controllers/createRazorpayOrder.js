@@ -1,6 +1,8 @@
 const razorpay = require("razorpay"); // Include Razorpay module
 
 const createRazorpayOrder = async (req, res) => {
+  console.log("amount mil gaya", req.amount);
+  // return false;
   // Set up your Razorpay instance with your API key and secret
   const rzp = new razorpay({
     key_id: "rzp_test_xtO2RWiNqyRHfJ",

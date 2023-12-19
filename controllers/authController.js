@@ -7,7 +7,15 @@ const User = require("../models/User");
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const {
+      username,
+      password,
+      user_role_id,
+      record_fee,
+      email,
+      mobile_number,
+    } = req.body;
+
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: "Username is already taken" });
@@ -17,13 +25,31 @@ exports.register = async (req, res) => {
     const saltRounds = 10; // You can adjust this value based on your security requirements
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newUser = new User({
+    const userObj = {
       username,
       password: hashedPassword,
-    });
+      user_role_id,
+    };
 
+    if (req.body.user_role_id == 2) {
+      userObj.company_name = req.body?.company_name || "";
+      userObj.company_address = req.body?.company_address || "";
+      userObj.gst_number = req.body?.gst_number || "";
+    }
+
+    if (req.body.user_role_id == 3) {
+      userObj.record_fee = record_fee;
+      userObj.email = email || "";
+      userObj.mobile_number = mobile_number || "";
+      userObj.wallet_amount = 0;
+    }
+
+    const newUser = new User(userObj);
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    res.status(201).json({
+      success: true,
+      message: "User has been register successfully.",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -48,9 +74,14 @@ exports.login = async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      {
+        userId: user._id,
+        username: user.username,
+        record_fee: user.record_fee,
+        user_role_id: user.user_role_id,
+      },
       config.jwtSecret,
-      { expiresIn: "24h" }
+      { expiresIn: "1h" }
     );
 
     res.json({ token });
@@ -59,7 +90,6 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 // Logout a user (JWT tokens are stateless, so "logging out" is typically handled on the client side)
 exports.logout = (req, res) => {

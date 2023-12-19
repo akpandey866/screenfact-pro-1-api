@@ -12,10 +12,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    wallet_amount: { type: Number, required: false },
+    user_role_id: { type: Number, required: false }, //1=>superadmin,2=>company(collaborator-1)(who upload the record),3=>collaborator-2(who buys the product)
+    // Company registration details collaborator-1
+    company_name: { type: String, required: false },
+    company_address: { type: String, required: false },
+    gst_number: { type: String, required: false },
+    // Collaborator-2 info
     record_fee: { type: Number, required: false },
-    // You can add more fields as needed, for example:
-    // email: { type: String, required: true, unique: true },
+    email: { type: String, required: false, unique: true },
+    mobile_number: { type: String, required: false, unique: true },
+    wallet_amount: { type: Number, required: false },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

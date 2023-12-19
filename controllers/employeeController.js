@@ -137,3 +137,24 @@ exports.getSearchedEmp = async (req, res) => {
 exports.getRecords = (req, res) => {
   // res.json(submittedRecords);
 };
+
+exports.getCompanyList = async (req, res) => {
+  try {
+    //const userId = req.authData.userId;
+    const result = await Candidate.distinct("company_name")
+      .collation({ locale: "en", strength: 2 })
+      .sort({ company_name: 1 })
+      .exec();
+
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "error",
+    });
+  }
+};

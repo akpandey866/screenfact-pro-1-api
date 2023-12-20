@@ -112,6 +112,8 @@ router.get("/protected", authController.verifyToken, (req, res) => {
   });
 });
 
+router.post("/appealClosed", verifyToken, employeeController.appealClosed);
+
 // router.all("/wallet/edit/:id", WalletController.edit);
 // router.get("/faqs/status/:id/:status", WalletController.status);
 

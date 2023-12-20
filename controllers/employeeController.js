@@ -4,6 +4,8 @@ const Candidate = require("../models/Candidate");
 const path = require("path");
 // const moment = require("moment");
 const moment = require("moment");
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const submittedRecords = [];
 
@@ -38,15 +40,22 @@ exports.getAllEmployees = async (req, res) => {
   try {
     //const userId = req.authData.userId;
     const searchedEmployee = await Employee.find({ status: 1 })
-      .sort({ createdAt: -1 })
+      .sort({ _id: -1 })
       .limit(5);
-    const appealedEmployee = await Employee.find({ status: 2 })
-      .sort({ createdAt: -1 })
+    const appealedEmployee = await Employee.find({ status: { $in: [2, 3] } })
+      .sort({ _id: -1 })
       .limit(5);
+    const searchCount = await Employee.countDocuments({ status: 1 });
+    const pendingAppealCount = await Employee.countDocuments({ status: 2 });
+    const closedAppealCount = await Employee.countDocuments({ status: 3 });
+
     res.status(201).json({
       success: true,
       searchedEmployee: searchedEmployee,
       appealedEmployee: appealedEmployee,
+      searchCount: searchCount,
+      pendingAppealCount: pendingAppealCount,
+      closedAppealCount: closedAppealCount,
     });
   } catch (error) {
     console.error(error);
@@ -79,7 +88,7 @@ exports.getAllSearch = async (req, res) => {
 exports.getAllAppeal = async (req, res) => {
   try {
     //const userId = req.authData.userId;
-    const appealList = await Employee.find({ status: 1 }).sort({
+    const appealList = await Employee.find({ status: { $in: [2, 3] } }).sort({
       createdAt: -1,
     });
     res.status(201).json({
@@ -115,15 +124,26 @@ exports.getSingleEmployees = async (req, res) => {
 
 exports.getSearchedEmp = async (req, res) => {
   try {
-    //const userId = req.authData.userId;
     const findEmployee = await Candidate.findOne({
-      name_of_employee: req.body.name,
-      employee_code: req.body.employeeId,
-      doj: req.body.dateOfJoin,
-      dol: req.body.dateOfLeave,
-      designation: req.body.designation,
-      //salary: req.body.salary,
+      $and: [
+        {
+          $and: [
+            { name_of_employee: { $regex: new RegExp(req.body.name, "i") } },
+            { employee_code: { $regex: new RegExp(req.body.employeeId, "i") } },
+          ],
+        },
+        {
+          $or: [
+            { doj: { $regex: new RegExp(req.body.dateOfJoin, "i") } },
+            { dol: { $regex: new RegExp(req.body.dateOfLeave, "i") } },
+            { designation: { $regex: new RegExp(req.body.designation, "i") } },
+            { salary: { $regex: new RegExp(req.body.salary, "i") } },
+            // Add more conditions as needed
+          ],
+        },
+      ],
     });
+
     res.status(201).json({
       success: true,
       data: findEmployee,
@@ -141,7 +161,8 @@ exports.getRecords = (req, res) => {
 exports.getCompanyList = async (req, res) => {
   try {
     //const userId = req.authData.userId;
-    const result = await Candidate.distinct("company_name")
+    const result = await Candidate.find()
+      .distinct("company_name")
       .collation({ locale: "en", strength: 2 })
       .sort({ company_name: 1 })
       .exec();
@@ -155,6 +176,35 @@ exports.getCompanyList = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "error",
+    });
+  }
+};
+
+exports.appealClosed = async function (req, res) {
+  console.log("req.body.id", req.body.id);
+  try {
+    // Update the user's amount_wallet field
+    const updateOperation = {
+      $set: {
+        status: 3,
+      },
+    };
+
+    const result = await Employee.updateOne(
+      { _id: req.body.id },
+      updateOperation
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Appeal closed successfully",
+    });
+  } catch (error) {
+    console.error("Error appeal closed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error appeal closed.",
+      error: error.message,
     });
   }
 };

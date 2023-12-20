@@ -13,7 +13,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const port = 3000;
+const port = 4000;
 
 app.use("/api", routes);
 //app.use(cors());

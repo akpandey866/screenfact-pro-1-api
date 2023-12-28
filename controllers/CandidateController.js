@@ -17,10 +17,7 @@ const sanitizeField = (fieldName) => {
 
 // Function to validate date format
 const isValidDateFormat = (dateString) => {
-  const humanReadableDate = moment(
-    new Date(Math.floor((dateString - 25569) * 86400 * 1000))
-  ).format("DD-MMM-YYYY");
-  return moment(humanReadableDate, "DD-MMM-YYYY", true).isValid();
+  return moment(dateString, "DD-MMM-YYYY", true).isValid();
 };
 
 // Function to validate non-empty fields
@@ -46,7 +43,7 @@ const validateFields = (candidate) => {
   return { isValid: errors.length === 0, errors };
 };
 
-// importCandidateRecord a new item for the authenticated user
+// Import a new item for the authenticated user
 exports.importCandidateRecord = async (req, res) => {
   try {
     const candidateDataArray = req.body.candidateData;
@@ -80,9 +77,19 @@ exports.importCandidateRecord = async (req, res) => {
       });
     }
 
-    // Assuming you have middleware to extract user information from the JWT token
+    // Convert date strings to Date objects for insertion
+    const candidatesWithParsedDates = sanitizedCandidateData.map(
+      (candidate) => {
+        return {
+          ...candidate,
+          doj: moment(candidate.doj, "DD-MMM-YYYY").toDate(),
+          dol: moment(candidate.dol, "DD-MMM-YYYY").toDate(),
+        };
+      }
+    );
 
-    const newCandidates = await Candidate.insertMany(sanitizedCandidateData);
+    // Assuming you have middleware to extract user information from the JWT token
+    const newCandidates = await Candidate.insertMany(candidatesWithParsedDates);
 
     if (newCandidates.length > 0) {
       res.status(200).json({

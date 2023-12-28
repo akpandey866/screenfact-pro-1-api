@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    user_role_id: { type: Number, required: false }, //1=>superadmin,2=>company(collaborator-1)(who upload the record),3=>collaborator-2(who buys the product)
+    user_role_id: { type: Number, required: false }, //1=>superadmin,2=>company(collaborator-1)(who upload the record),3=>collaborator-2(who buys the product),4=>Screenfact internal users
     // Company registration details collaborator-1
     company_name: { type: String, required: false },
     company_address: { type: String, required: false },

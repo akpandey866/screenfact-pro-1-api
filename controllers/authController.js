@@ -43,7 +43,6 @@ exports.register = async (req, res) => {
       userObj.mobile_number = mobile_number || "";
       userObj.wallet_amount = 0;
     }
-
     const newUser = new User(userObj);
     const savedUser = await newUser.save();
     res.status(201).json({
@@ -73,17 +72,27 @@ exports.login = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign(
-      {
-        userId: user._id,
-        username: user.username,
-        record_fee: user.record_fee,
-        user_role_id: user.user_role_id,
-        company_name: user.company_name,
-      },
-      config.jwtSecret,
-      { expiresIn: "1h" }
-    );
+    const tokenPayload = {
+      userId: user._id,
+      username: user.username,
+      record_fee: user.record_fee,
+      user_role_id: user.user_role_id,
+      company_name: user.company_name,
+      email: user.useremail,
+      mobile_number: user.mobile_number,
+      wallet_amount: user.wallet_amount,
+    };
+
+    // Check and include gst_number if it's defined
+    // if (gst_number !== undefined) {
+    //   tokenPayload.gst_number = gst_number;
+    // } else {
+    //   tokenPayload.gst_number = 0;
+    // }
+
+    const token = jwt.sign(tokenPayload, config.jwtSecret, {
+      expiresIn: "24h",
+    });
 
     res.json({ token });
   } catch (error) {

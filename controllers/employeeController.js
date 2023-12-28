@@ -130,20 +130,21 @@ exports.getSearchedEmp = async (req, res) => {
           $and: [
             { name_of_employee: { $regex: new RegExp(req.body.name, "i") } },
             { employee_code: { $regex: new RegExp(req.body.employeeId, "i") } },
+            { company_name: { $regex: new RegExp(req.body.companyId, "i") } },
           ],
         },
-        {
-          $or: [
-            { doj: { $regex: new RegExp(req.body.dateOfJoin, "i") } },
-            { dol: { $regex: new RegExp(req.body.dateOfLeave, "i") } },
-            { designation: { $regex: new RegExp(req.body.designation, "i") } },
-            { salary: { $regex: new RegExp(req.body.salary, "i") } },
-            // Add more conditions as needed
-          ],
-        },
+        // {
+        //   $or: [
+        //     { doj: { $regex: new RegExp(req.body.dateOfJoin, "i") } },
+        //     { dol: { $regex: new RegExp(req.body.dateOfLeave, "i") } },
+        //     { designation: { $regex: new RegExp(req.body.designation, "i") } },
+        //     { salary: { $regex: new RegExp(req.body.salary, "i") } },
+        //     // Add more conditions as needed
+        //   ],
+        // },
       ],
     });
-
+    // console.log("getEmpData=>", findEmployee);
     res.status(201).json({
       success: true,
       data: findEmployee,

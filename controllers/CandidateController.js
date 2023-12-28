@@ -60,6 +60,7 @@ exports.importCandidateRecord = async (req, res) => {
       return sanitizedCandidate;
     });
 
+    console.log("sanitizedCandidateData=>", sanitizedCandidateData);
     // Validate each candidate data
     const validationResults = sanitizedCandidateData.map(validateFields);
     const invalidCandidates = validationResults.filter(

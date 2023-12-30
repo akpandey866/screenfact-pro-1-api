@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema(
     // Collaborator-2 info
     record_fee: { type: Number, required: false },
     email: { type: String, required: false, unique: true },
-    mobile_number: { type: String, required: false, unique: true },
     wallet_amount: { type: Number, required: false },
   },
   {

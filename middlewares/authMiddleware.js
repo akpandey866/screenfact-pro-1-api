@@ -26,6 +26,7 @@ exports.verifyToken = (req, res, next) => {
 
     req.authData = {
       userId: decoded.userId,
+      email: decoded.email,
       username: decoded.username,
       company_name: decoded.company_name,
     };

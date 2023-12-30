@@ -69,8 +69,8 @@ exports.deductAmount = async function (req, res) {
     const walletAmount = await User.findOne({ _id: userId }).select(
       "wallet_amount record_fee"
     );
-    console.log("walletAmount=>", walletAmount);
-    if (walletAmount.wallet_amount >= walletAmount.record_fee) {
+
+    if (walletAmount.wallet_amount >= req.body.amount) {
       // Update the user's amount_wallet field
       console.log("req for deduct amount--->", req.body);
       const wallet = new Wallet({

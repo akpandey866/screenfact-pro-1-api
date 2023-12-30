@@ -3,22 +3,16 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../configs/config");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const {
-      username,
-      password,
-      user_role_id,
-      record_fee,
-      email,
-      mobile_number,
-    } = req.body;
+    const { username, password, user_role_id, record_fee, email } = req.body;
 
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "Username is already taken" });
+      return res.status(400).json({ error: "Email is already taken" });
     }
 
     // Generate a salt and hash the password
@@ -27,6 +21,7 @@ exports.register = async (req, res) => {
 
     const userObj = {
       username,
+      email,
       password: hashedPassword,
       user_role_id,
     };
@@ -35,13 +30,13 @@ exports.register = async (req, res) => {
       userObj.company_name = req.body?.company_name || "";
       userObj.company_address = req.body?.company_address || "";
       userObj.gst_number = req.body?.gst_number || "";
+      userObj.username = req.body?.username || "";
+      userObj.record_fee = record_fee;
     }
 
     if (req.body.user_role_id == 3) {
-      userObj.record_fee = record_fee;
-      userObj.email = email || "";
-      userObj.mobile_number = mobile_number || "";
       userObj.wallet_amount = 0;
+      userObj.username = req.body?.username || "";
     }
     const newUser = new User(userObj);
     const savedUser = await newUser.save();
@@ -58,17 +53,17 @@ exports.register = async (req, res) => {
 // Login a user
 exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     // Find the user in the database
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({ error: "Invalid email" });
     }
 
     // Check if the provided password matches the hashed password in the database
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({ error: "Invalid password" });
     }
 
     // Generate a JWT token
@@ -79,7 +74,6 @@ exports.login = async (req, res) => {
       user_role_id: user.user_role_id,
       company_name: user.company_name,
       email: user.useremail,
-      mobile_number: user.mobile_number,
       wallet_amount: user.wallet_amount,
     };
 
@@ -126,4 +120,57 @@ exports.verifyToken = (req, res, next) => {
     };
     next();
   });
+};
+
+exports.getLogginDetail = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.authData.userId);
+    const result = await User.findOne({ _id: userId }).exec();
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.authData.userId);
+    const updateOperation = {
+      $set: {
+        company_name: req.body.company_name,
+        company_address: req.body.company_address,
+        gst_number: req.body.gst_number,
+        record_fee: req.body.record_fee,
+      },
+    };
+
+    const result = await User.updateOne({ _id: userId }, updateOperation);
+
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getRecordPrice = async (req, res) => {
+  try {
+    const companyName = req.params.id;
+    const recordId = new mongoose.Types.ObjectId(companyName);
+    const result = await User.findOne({ _id: recordId }).exec();
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };

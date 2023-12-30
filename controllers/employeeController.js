@@ -1,6 +1,7 @@
 // controllers.js
 const Employee = require("../models/Employee");
 const Candidate = require("../models/Candidate");
+const User = require("../models/User");
 const path = require("path");
 // const moment = require("moment");
 const moment = require("moment");
@@ -162,8 +163,7 @@ exports.getRecords = (req, res) => {
 exports.getCompanyList = async (req, res) => {
   try {
     //const userId = req.authData.userId;
-    const result = await Candidate.find()
-      .distinct("company_name")
+    const result = await User.find({ user_role_id: 2 })
       .collation({ locale: "en", strength: 2 })
       .sort({ company_name: 1 })
       .exec();

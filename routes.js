@@ -54,6 +54,11 @@ router.post(
     employeeController.createEmployee(req, res, next);
   }
 );
+// router.post("/saveQuery", verifyToken, upload.none(), (req, res, next) => {
+//   // Proceed with saving data (file or no file)
+//   CandidateController.saveQuery(req, res, next);
+// });
+router.post("/saveQuery", verifyToken, CandidateController.saveQuery);
 // router.post("/saveCandidateSearch", upload.single("file"), (req, res, next) => {
 //   // Check if a file was uploaded
 //   if (req.file) {

@@ -1,5 +1,7 @@
 const Candidate = require("../models/Candidate");
+const CandidateQuery = require("../models/CandidateQuery");
 const moment = require("moment");
+const mongoose = require("mongoose");
 
 // Helper function to sanitize field names
 const sanitizeField = (fieldName) => {
@@ -107,5 +109,46 @@ exports.importCandidateRecord = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error saving candidates to the database" });
+  }
+};
+
+exports.saveQuery = async (req, res) => {
+  try {
+    const { candidate_id, user_id, query } = req.body;
+    // Assuming you have middleware to extract user information from the JWT token
+    var newQuery = new CandidateQuery();
+    newQuery.candidate_id = req.body.candidate_id;
+    newQuery.user_id = req.body.user_id;
+    newQuery.query = req.body.query;
+
+    const savedQuery = await newQuery.save();
+    res.status(201).json(savedQuery);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.saveQuery = async function (req, res) {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.authData.userId);
+    const candidateQuery = new CandidateQuery({
+      user_id: userId,
+      candidate_id: req.body.candidate_id,
+      query: req.body.query,
+    });
+
+    await candidateQuery.save();
+    res.status(201).json({
+      success: true,
+      message: "Query has been sent successfully",
+    });
+  } catch (error) {
+    console.error("Error query send:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error query send.",
+      error: error.message,
+    });
   }
 };

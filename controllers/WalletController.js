@@ -12,7 +12,9 @@ exports.listing = async function (req, res) {
     );
 
     // Fetch wallet data
-    const result = await Wallet.find({ user_id: userId }).exec();
+    const result = await Wallet.find({ user_id: userId })
+      .sort({ created_at: -1 })
+      .exec();
 
     res.status(201).json({
       success: true,
@@ -63,33 +65,44 @@ exports.addMoney = async function (req, res) {
 exports.deductAmount = async function (req, res) {
   try {
     const userId = new mongoose.Types.ObjectId(req.authData.userId);
-    // Update the user's amount_wallet field
-    console.log("req for deduct amount--->", req.body);
-    const wallet = new Wallet({
-      user_id: userId,
-      payment_status: 1,
-      amount: req.body.amount,
-      type: 2,
-    });
-
-    await wallet.save();
-
-    console.log("popoppopo", req.body);
-    await User.updateOne(
-      { _id: userId },
-      { $inc: { wallet_amount: -req.body.amount } }
+    // Fetch wallet amount
+    const walletAmount = await User.findOne({ _id: userId }).select(
+      "wallet_amount record_fee"
     );
-    console.log("deductt");
-    res.status(201).json({
-      success: true,
-      message: "Amount has been deducted from your account.",
-    });
+    console.log("walletAmount=>", walletAmount);
+    if (walletAmount.wallet_amount >= walletAmount.record_fee) {
+      // Update the user's amount_wallet field
+      console.log("req for deduct amount--->", req.body);
+      const wallet = new Wallet({
+        user_id: userId,
+        payment_status: 1,
+        amount: req.body.amount,
+        type: 2,
+      });
+
+      await wallet.save();
+      console.log("popoppopo", req.body);
+      await User.updateOne(
+        { _id: userId },
+        { $inc: { wallet_amount: -req.body.amount } }
+      );
+      console.log("deductt");
+      res.status(201).json({
+        success: true,
+        message: "Amount has been deducted from your account.",
+      });
+    } else {
+      res.status(201).json({
+        success: false,
+        message:
+          "You don't have enough money in your wallet, please add money in your wallet",
+      });
+    }
   } catch (error) {
-    console.error("Error deduct amount from wallet:", error);
-    res.status(500).json({
+    res.status(201).json({
       success: false,
-      message: "Error deduct amount from wallet.",
-      error: error.message,
+      message:
+        "You don't have enough money in your wallet, please add money in your wallet",
     });
   }
 };

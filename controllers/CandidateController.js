@@ -151,3 +151,24 @@ exports.saveQuery = async function (req, res) {
     });
   }
 };
+
+exports.getUploadedData = async (req, res) => {
+  const companyName = req.authData.company_name;
+  try {
+    //const userId = req.authData.userId;
+    const result = await Candidate.find({ company_name: companyName })
+      .sort({ _id: -1 })
+      .exec();
+
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "error",
+    });
+  }
+};

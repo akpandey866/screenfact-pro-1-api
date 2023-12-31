@@ -41,6 +41,7 @@ router.post("/create-order", upload.none(), (req, res, next) => {
 router.post("/items", itemsController.create);
 router.get("/items", itemsController.read);
 router.put("/items/:id", itemsController.update);
+
 router.delete("/items/:id", itemsController.delete);
 
 router.get("/", employeeController.showForm);
@@ -105,10 +106,20 @@ router.post(
   CandidateController.importCandidateRecord
 );
 
+router.get(
+  "/getUploadedData",
+  verifyToken,
+  CandidateController.getUploadedData
+);
+
 // Wallet routes
 router.get("/wallet/listing", verifyToken, WalletController.listing);
 router.post("/wallet/addMoney", verifyToken, WalletController.addMoney);
 router.post("/wallet/deductAmount", verifyToken, WalletController.deductAmount);
+
+router.get("/getLogginDetail", verifyToken, authController.getLogginDetail);
+router.post("/updateUser", verifyToken, authController.updateUser);
+router.get("/getRecordPrice/:id", authController.getRecordPrice);
 // Protected route example
 router.get("/protected", authController.verifyToken, (req, res) => {
   res.json({

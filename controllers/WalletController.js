@@ -69,10 +69,8 @@ exports.deductAmount = async function (req, res) {
     const walletAmount = await User.findOne({ _id: userId }).select(
       "wallet_amount record_fee"
     );
-    console.log("walletAmount=>", walletAmount);
     if (walletAmount.wallet_amount >= walletAmount.record_fee) {
       // Update the user's amount_wallet field
-      console.log("req for deduct amount--->", req.body);
       const wallet = new Wallet({
         user_id: userId,
         payment_status: 1,
@@ -81,12 +79,10 @@ exports.deductAmount = async function (req, res) {
       });
 
       await wallet.save();
-      console.log("popoppopo", req.body);
       await User.updateOne(
         { _id: userId },
         { $inc: { wallet_amount: -req.body.amount } }
       );
-      console.log("deductt");
       res.status(201).json({
         success: true,
         message: "Amount has been deducted from your account.",

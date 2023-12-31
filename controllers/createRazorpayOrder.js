@@ -1,8 +1,6 @@
 const razorpay = require("razorpay"); // Include Razorpay module
 
 const createRazorpayOrder = async (req, res) => {
-  console.log("amount mil gaya", req.amount);
-  // return false;
   // Set up your Razorpay instance with your API key and secret
   const rzp = new razorpay({
     key_id: "rzp_test_xtO2RWiNqyRHfJ",
@@ -20,7 +18,6 @@ const createRazorpayOrder = async (req, res) => {
   try {
     // Create Razorpay order
     const response = await rzp.orders.create(options);
-    console.log("response", response);
     // Send the order response to the client
     res.json(response);
   } catch (error) {
@@ -33,7 +30,6 @@ const saveOrder = async (req, res) => {
   try {
     // Create Razorpay order
     const response = await rzp.orders.create(options);
-    console.log("response", response);
     // Send the order response to the client
     res.json(response);
   } catch (error) {

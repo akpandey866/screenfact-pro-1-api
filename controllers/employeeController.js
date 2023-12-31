@@ -144,7 +144,6 @@ exports.getSearchedEmp = async (req, res) => {
         // },
       ],
     });
-    // console.log("getEmpData=>", findEmployee);
     res.status(201).json({
       success: true,
       data: findEmployee,
@@ -182,7 +181,6 @@ exports.getCompanyList = async (req, res) => {
 };
 
 exports.appealClosed = async function (req, res) {
-  console.log("req.body.id", req.body.id);
   try {
     // Update the user's amount_wallet field
     const updateOperation = {

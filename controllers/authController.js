@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 // Register a new user
 exports.register = async (req, res) => {
   try {
+    console.log("req.body", req.body);
+
     const { username, password, user_role_id, record_fee, email } = req.body;
 
     const existingUser = await User.findOne({ email });
@@ -37,6 +39,7 @@ exports.register = async (req, res) => {
     if (req.body.user_role_id == 3) {
       userObj.wallet_amount = 0;
       userObj.username = req.body?.username || "";
+      userObj.payment_mode = req.body.payment_mode;
     }
     const newUser = new User(userObj);
     const savedUser = await newUser.save();
@@ -75,6 +78,7 @@ exports.login = async (req, res) => {
       company_name: user.company_name,
       email: user.useremail,
       wallet_amount: user.wallet_amount,
+      payment_mode: user.payment_mode,
     };
 
     // Check and include gst_number if it's defined

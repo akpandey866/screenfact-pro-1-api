@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     record_fee: { type: Number, required: false },
     email: { type: String, required: false, unique: true },
     wallet_amount: { type: Number, required: false },
-    payment_mode: { type: Number, required: false }, //1=>PayNow,2=>Wallet,3=>Free
+    payment_mode: { type: Number, required: false }, //1=>InstantPay,2=>Wallet,3=>Free
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

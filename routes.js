@@ -91,7 +91,7 @@ router.post("/getSearchedEmp", upload.none(), (req, res, next) => {
 });
 router.get("/getAllSearch", employeeController.getAllSearch);
 router.get("/getAllAppeal", employeeController.getAllAppeal);
-
+router.get("/allUsers", authController.allUsers);
 // router.get('/employees/:id', employeeController.getEmployeeById);
 // router.put('/employees/:id', employeeController.updateEmployeeById);
 // router.delete('/employees/:id', employeeController.deleteEmployeeById);

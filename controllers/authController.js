@@ -174,3 +174,28 @@ exports.getRecordPrice = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.allUsers = async (req, res) => {
+  try {
+    const searchedUser = await User.find({ user_role_id: 3 }).sort({ _id: -1 });
+    const searchedCompany = await User.find({ user_role_id: 2 }).sort({
+      _id: -1,
+    });
+    const searchedScreenfactUsers = await User.find({ user_role_id: 4 }).sort({
+      _id: -1,
+    });
+
+    res.status(201).json({
+      success: true,
+      searchedUser: searchedUser,
+      searchedCompany: searchedCompany,
+      searchedScreenfactUsers: searchedScreenfactUsers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "error",
+    });
+  }
+};

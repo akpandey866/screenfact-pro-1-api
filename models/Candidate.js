@@ -12,7 +12,7 @@ const candidateSchema = new mongoose.Schema(
     full_final_formality: String,
     performance_issue: String,
     eligible_for_rehire: String,
-    company_name: String,
+    user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

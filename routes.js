@@ -107,7 +107,7 @@ router.post(
 );
 
 router.get(
-  "/getUploadedData",
+  "/getUploadedData/:userId",
   verifyToken,
   CandidateController.getUploadedData
 );

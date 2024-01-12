@@ -29,6 +29,7 @@ exports.verifyToken = (req, res, next) => {
       email: decoded.email,
       username: decoded.username,
       company_name: decoded.company_name,
+      user_role_id: decoded.user_role_id,
     };
 
     next();

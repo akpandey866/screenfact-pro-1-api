@@ -6,7 +6,7 @@ require("./configs/db.js");
 require("dotenv").config();
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT;
 
 // Enable CORS with proper configuration
 app.use(

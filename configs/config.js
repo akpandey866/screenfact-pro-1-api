@@ -8,5 +8,5 @@ module.exports = {
     },
   },
   jwtSecret: "N7$^rL#s9qEaFp2yGhZbT!uKjXv3@Wk",
-  port: process.env.PORT || 4000,
+  port: process.env.PORT || 5000,
 };

@@ -42,7 +42,7 @@ router.post("/items", itemsController.create);
 router.get("/items", itemsController.read);
 router.put("/items/:id", itemsController.update);
 
-router.delete("/items/:id", itemsController.delete);
+router.put("/items/:id", itemsController.update);
 
 router.get("/", employeeController.showForm);
 router.get("/getCompanyList", employeeController.getCompanyList);
@@ -97,7 +97,11 @@ router.get("/allUsers", authController.allUsers);
 // router.delete('/employees/:id', employeeController.deleteEmployeeById);
 
 // Logout (not implemented in the server, since JWT tokens are stateless)
-router.get("/logout", authController.logout);
+// router.get("/logout", authController.logout);
+router.post("/logout", (req, res) => {
+  // Invalidate the token or clear the session (if applicable)
+  res.status(200).json({ success: true, message: "Logged out successfully" });
+});
 
 // candidate save records
 router.post(
@@ -107,7 +111,7 @@ router.post(
 );
 
 router.get(
-  "/getUploadedData",
+  "/getUploadedData/:userId",
   verifyToken,
   CandidateController.getUploadedData
 );
@@ -118,8 +122,10 @@ router.post("/wallet/addMoney", verifyToken, WalletController.addMoney);
 router.post("/wallet/deductAmount", verifyToken, WalletController.deductAmount);
 
 router.get("/getLogginDetail", verifyToken, authController.getLogginDetail);
+router.delete("/delete-vendor/:id", authController.deleteVendor);
 router.post("/updateUser", verifyToken, authController.updateUser);
 router.get("/getRecordPrice/:id", authController.getRecordPrice);
+router.get("/getUserDetails/:userId", authController.getUserDetails);
 // Protected route example
 router.get("/protected", authController.verifyToken, (req, res) => {
   res.json({
@@ -129,6 +135,10 @@ router.get("/protected", authController.verifyToken, (req, res) => {
 });
 
 router.post("/appealClosed", verifyToken, employeeController.appealClosed);
+
+router.post("/impersonate/:id", authController.impersonateUser);
+
+router.post("/changePassword", authController.changePassword);
 
 // router.all("/wallet/edit/:id", WalletController.edit);
 // router.get("/faqs/status/:id/:status", WalletController.status);

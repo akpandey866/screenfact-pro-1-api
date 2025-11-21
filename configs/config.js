@@ -1,7 +1,7 @@
 // config.js
 module.exports = {
   database: {
-    url: "mongodb://localhost:27017/screenfact",
+    url: process.env.MONGO_URI || "mongodb://localhost:27017/screenfact",
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true,

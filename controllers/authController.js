@@ -36,6 +36,7 @@ exports.register = async (req, res) => {
 
     if (req.body.user_role_id == 3) {
       userObj.wallet_amount = 0;
+      userObj.company_id = req.body?.company_id || 0;
       userObj.username = req.body?.username || "";
     }
     const newUser = new User(userObj);
@@ -177,13 +178,22 @@ exports.getRecordPrice = async (req, res) => {
 
 exports.allUsers = async (req, res) => {
   try {
-    const searchedUser = await User.find({ user_role_id: 3 }).sort({ _id: -1 });
-    const searchedCompany = await User.find({ user_role_id: 2 }).sort({
-      _id: -1,
-    });
-    const searchedScreenfactUsers = await User.find({ user_role_id: 4 }).sort({
-      _id: -1,
-    });
+    const searchedUser = await User.find({
+      user_role_id: 3,
+      $or: [{ isDeleted: false }, { isDeleted: { $exists: false } }], // Include records without isDeleted or with isDeleted: false
+    })
+      .sort({ _id: -1 })
+      .populate({ path: "company_id", select: "company_name" });
+
+    const searchedCompany = await User.find({
+      user_role_id: 2,
+      $or: [{ isDeleted: false }, { isDeleted: { $exists: false } }],
+    }).sort({ _id: -1 });
+
+    const searchedScreenfactUsers = await User.find({
+      user_role_id: 4,
+      $or: [{ isDeleted: false }, { isDeleted: { $exists: false } }],
+    }).sort({ _id: -1 });
 
     res.status(201).json({
       success: true,
@@ -197,5 +207,159 @@ exports.allUsers = async (req, res) => {
       success: false,
       message: "error",
     });
+  }
+};
+
+exports.deleteVendor = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    // Update the isDeleted field to true
+    const result = await User.findByIdAndUpdate(
+      userId,
+      { isDeleted: true },
+      { new: true } // Return the updated document
+    );
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Vendor soft deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error soft deleting Vendor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.impersonateUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    // Find the user to impersonate
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Create a payload similar to the login function
+    const tokenPayload = {
+      userId: user._id,
+      username: user.username,
+      record_fee: user.record_fee,
+      user_role_id: user.user_role_id,
+      company_name: user.company_name,
+      email: user.email,
+      wallet_amount: user.wallet_amount,
+    };
+
+    // Generate a new token for the selected user
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({
+      success: true,
+      token,
+      message: "Impersonation successful",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { password, confirm_password, userId } = req.body;
+
+    // Validate input
+    if (!password || !confirm_password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password and confirm password are required",
+      });
+    }
+
+    // Check if password and confirm_password match
+    if (password !== confirm_password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password and confirm password do not match",
+      });
+    }
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.getUserDetails = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const recordId = new mongoose.Types.ObjectId(userId);
+    const result = await User.findOne({ _id: recordId }).exec();
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

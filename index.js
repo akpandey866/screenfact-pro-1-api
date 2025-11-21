@@ -1,23 +1,30 @@
-// index.js
-
 const express = require("express");
 const routes = require("./routes");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const app = express();
 require("./configs/db.js");
-// app.use(cors());
+require("dotenv").config();
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const app = express();
+const port = 4000;
 
+// Enable CORS with proper configuration
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Replace with your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+    credentials: true, // Allow cookies or authentication headers
+  })
+);
+
+// Middleware for parsing request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const port = 4000;
-
+// Use routes
 app.use("/api", routes);
-//app.use(cors());
 
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });

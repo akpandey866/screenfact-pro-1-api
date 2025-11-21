@@ -86,6 +86,7 @@ exports.importCandidateRecord = async (req, res) => {
           ...candidate,
           doj: moment(candidate.doj, "DD-MMM-YYYY").toDate(),
           dol: moment(candidate.dol, "DD-MMM-YYYY").toDate(),
+          user_id: req.authData.userId,
         };
       }
     );
@@ -154,9 +155,11 @@ exports.saveQuery = async function (req, res) {
 
 exports.getUploadedData = async (req, res) => {
   const companyName = req.authData.company_name;
+  console.log("req.authData", req.authData);
   try {
     //const userId = req.authData.userId;
-    const result = await Candidate.find({ company_name: companyName })
+    const userId = new mongoose.Types.ObjectId(req.params.userId);
+    const result = await Candidate.find({ user_id: userId })
       .sort({ _id: -1 })
       .exec();
 
